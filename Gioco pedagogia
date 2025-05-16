@@ -1,0 +1,158 @@
+updated_html_code = '''
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Placca Attack!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #006064;
+            margin-top: 20px;
+        }
+        #gameArea {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 5px solid #004d40;
+            overflow: hidden;
+            background-image: url('https://i.imgur.com/1wSp6VX.png'); /* sfondo denti */
+            background-size: cover;
+        }
+        .plaque {
+            width: 50px;
+            height: 50px;
+            background: url('https://i.imgur.com/ADfLlGw.png') no-repeat center center;
+            background-size: cover;
+            position: absolute;
+            animation: wiggle 1s infinite;
+            cursor: pointer;
+        }
+        @keyframes wiggle {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        #scoreBoard {
+            font-size: 20px;
+            color: #004d40;
+        }
+        #startBtn {
+            background-color: #0097a7;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #mascot {
+            width: 120px;
+            margin: 10px auto;
+        }
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Placca Attack!</h1>
+    <p>Spazzola via tutta la placca prima che scada il tempo!</p>
+    <img id="mascot" src="https://i.imgur.com/N5ZpDp2.png" alt="Mascotte dentino sorridente">
+    <div id="scoreBoard">Punteggio: 0 | Tempo: <span id="timeLeft">30</span>s</div>
+    <button id="startBtn">Inizia il gioco</button>
+    <div id="gameArea"></div>
+
+    <audio id="popSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+    <audio id="endSound" src="https://www.soundjay.com/button/beep-10.wav"></audio>
+
+    <script>
+        const gameArea = document.getElementById("gameArea");
+        const scoreBoard = document.getElementById("scoreBoard");
+        const timeLeftDisplay = document.getElementById("timeLeft");
+        const startBtn = document.getElementById("startBtn");
+        const popSound = document.getElementById("popSound");
+        const endSound = document.getElementById("endSound");
+
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let plaqueInterval;
+
+        function randomPosition(size) {
+            const x = Math.random() * (gameArea.clientWidth - size);
+            const y = Math.random() * (gameArea.clientHeight - size);
+            return { x, y };
+        }
+
+        function spawnPlaque() {
+            const plaque = document.createElement("div");
+            plaque.classList.add("plaque");
+            const pos = randomPosition(50);
+            plaque.style.left = pos.x + "px";
+            plaque.style.top = pos.y + "px";
+            plaque.onclick = function () {
+                gameArea.removeChild(plaque);
+                score++;
+                updateScore();
+                popSound.play();
+            };
+            gameArea.appendChild(plaque);
+            setTimeout(() => {
+                if (gameArea.contains(plaque)) {
+                    gameArea.removeChild(plaque);
+                }
+            }, 3000);
+        }
+
+        function updateScore() {
+            scoreBoard.innerHTML = `Punteggio: ${score} | Tempo: <span id="timeLeft">${timeLeft}</span>s`;
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            updateScore();
+            startBtn.disabled = true;
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                updateScore();
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    clearInterval(plaqueInterval);
+                    endSound.play();
+                    let levelMsg = score >= 20 ? "Ottimo lavoro! Sei un esperto della pulizia!" :
+                                   score >= 10 ? "Bravo! Hai fatto un buon lavoro!" :
+                                   "Continua ad allenarti con lo spazzolino!";
+                    alert(`Tempo scaduto! Hai pulito ${score} placche.\n${levelMsg}`);
+                    startBtn.disabled = false;
+                }
+            }, 1000);
+
+            plaqueInterval = setInterval(() => {
+                spawnPlaque();
+            }, 700);
+        }
+
+        startBtn.addEventListener("click", startGame);
+    </script>
+</body>
+</html>
+'''
+
+# Salviamo il file aggiornato
+updated_file_path = "/mnt/data/placca_attack_completo.html"
+with open(updated_file_path, "w", encoding="utf-8") as f:
+    f.write(updated_html_code)
+
+updated_file_path
